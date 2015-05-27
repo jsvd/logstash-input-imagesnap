@@ -6,8 +6,6 @@ require "socket" # for Socket.gethostname
 
 class LogStash::Inputs::ImageSnap < LogStash::Inputs::Base
 
-  PLUGIN_FOLDER = File.expand_path(File.dirname(File.dirname(__FILE__)))
-
   config_name "imagesnap"
 
   default :codec, "plain"
@@ -18,7 +16,7 @@ class LogStash::Inputs::ImageSnap < LogStash::Inputs::Base
 
   def run(queue)
     Stud.interval(@interval) do
-      system("#{PLUGIN_FOLDER}/../../vendor/imagesnap -w 2 /tmp/snapshot.jpg >> /dev/null 2>&1")
+      system("imagesnap -w 2 /tmp/snapshot.jpg >> /dev/null 2>&1")
       system("sips -Z 320 /tmp/snapshot.jpg 2>&1 >> /dev/null 2>&1")
       image = IO.popen("cat /tmp/snapshot.jpg").read
       event = LogStash::Event.new("message" => image)
